@@ -648,6 +648,7 @@
   var lotsMapReset = lotsMapModal ? lotsMapModal.querySelector('[data-lots-map-reset]') : null;
   var lotsMapCloseButtons = lotsMapModal ? lotsMapModal.querySelectorAll('[data-lots-map-close]') : [];
   var photosWrap = document.querySelector('.photos-wrap');
+  var villaPhotos = photosWrap ? photosWrap.querySelectorAll('.photo-wrap') : [];
   var villaTrack = document.querySelector('.villas-track');
   var lastCtaSection = document.querySelector('.section-last-cta');
   var lastCtaImage = document.querySelector('.last-cta-image');
@@ -1003,20 +1004,45 @@
   }
 
   // VILLAS
-  if (photosWrap && villaTrack) {
-    gsap.fromTo(photosWrap,
-      { yPercent: 4 },
-      {
-        yPercent: -4,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: villaTrack,
-          start: 'top 78%',
-          end: 'bottom 28%',
-          scrub: 1.1
-        }
+  if (photosWrap && villaTrack && villaPhotos.length === 3) {
+    var firstVillaPhoto = villaPhotos[0];
+    var secondVillaPhoto = villaPhotos[1];
+    var thirdVillaPhoto = villaPhotos[2];
+
+    gsap.set(firstVillaPhoto, { autoAlpha: 1, yPercent: 0, scale: 1, rotate: -4 });
+    gsap.set(secondVillaPhoto, { autoAlpha: 0, yPercent: 10, scale: 0.96, rotate: 4 });
+    gsap.set(thirdVillaPhoto, { autoAlpha: 0, yPercent: 12, scale: 0.95, rotate: 7 });
+
+    var villasTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: villaTrack,
+        start: 'top 72%',
+        end: 'bottom 25%',
+        scrub: 1
       }
-    );
+    });
+
+    villasTimeline.to(firstVillaPhoto, {
+      yPercent: -2,
+      scale: 0.985,
+      ease: 'none'
+    }, 0);
+
+    villasTimeline.to(secondVillaPhoto, {
+      autoAlpha: 1,
+      yPercent: 0,
+      scale: 1,
+      rotate: 1.5,
+      ease: 'power2.out'
+    }, 0.2);
+
+    villasTimeline.to(thirdVillaPhoto, {
+      autoAlpha: 1,
+      yPercent: 0,
+      scale: 1,
+      rotate: 4,
+      ease: 'power2.out'
+    }, 0.52);
   }
 
   // HOUSE BRIDGE
