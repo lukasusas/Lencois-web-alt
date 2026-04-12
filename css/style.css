@@ -826,6 +826,7 @@ li {
   justify-content: center;
   align-items: center;
   min-height: 55vh;
+  padding-bottom: clamp(2rem, 4vw, 4rem);
   position: relative;
   overflow: hidden;
   background:
@@ -1698,7 +1699,7 @@ body.lots-map-modal-open {
 
   .lots-map-wrap {
     min-height: 34vh;
-    padding: 1rem 0 2.25rem;
+    padding: 1rem 0 2.75rem;
   }
 
   .lots-map {
