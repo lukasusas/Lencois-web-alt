@@ -381,7 +381,7 @@
         loading="lazy"
         class="lots-map"
       />
-      <span class="lots-map-trigger__hint">Clique para ampliar</span>
+      <span class="lots-map-trigger__hint">Abrir mapa completo</span>
     </button>
   </div>
 </section>
@@ -398,7 +398,8 @@
     <div class="lots-map-modal__toolbar">
       <div class="lots-map-modal__meta">
         <p class="lots-map-modal__eyebrow">Mapa dos lotes</p>
-        <h3 class="lots-map-modal__title" id="lots-map-modal-title">Amplie e explore o desenho completo</h3>
+        <h3 class="lots-map-modal__title" id="lots-map-modal-title">Explore o desenho completo</h3>
+        <p class="lots-map-modal__helper">Role para aproximar, arraste para mover e pressione Esc para fechar.</p>
       </div>
       <div class="lots-map-modal__controls">
         <button type="button" class="lots-map-modal__control" data-lots-map-zoom-out aria-label="Diminuir zoom">−</button>
@@ -647,6 +648,7 @@
   var lotsMapZoomOut = lotsMapModal ? lotsMapModal.querySelector('[data-lots-map-zoom-out]') : null;
   var lotsMapReset = lotsMapModal ? lotsMapModal.querySelector('[data-lots-map-reset]') : null;
   var lotsMapCloseButtons = lotsMapModal ? lotsMapModal.querySelectorAll('[data-lots-map-close]') : [];
+  var lotsMapDesktopQuery = window.matchMedia('(min-width: 1025px)');
   var photosWrap = document.querySelector('.photos-wrap');
   var villaPhotos = photosWrap ? photosWrap.querySelectorAll('.photo-wrap') : [];
   var villaTrack = document.querySelector('.villas-track');
@@ -664,8 +666,13 @@
     startScrollTop: 0,
     pinchDistance: 0,
     pinchZoom: 1,
-    lastTapAt: 0
+    lastTapAt: 0,
+    isMousePanning: false
   };
+
+  function isLotsMapDesktopMode() {
+    return lotsMapDesktopQuery.matches;
+  }
 
   function clampLotsMapZoom(value) {
     return Math.max(1, Math.min(3.2, value));
@@ -734,12 +741,15 @@
   }
 
   function openLotsMapModal() {
-    if (!lotsMapModal || !lotsMapPanel) return;
+    if (!lotsMapModal || !lotsMapPanel || !isLotsMapDesktopMode()) return;
     lastFocusedElement = document.activeElement;
     applyLotsMapZoom(1);
     lotsMapModal.classList.add('is-open');
     lotsMapModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('lots-map-modal-open');
+    if (lotsMapTrigger) {
+      lotsMapTrigger.setAttribute('aria-expanded', 'true');
+    }
     if (lotsMapViewport) {
       lotsMapViewport.scrollTop = 0;
       lotsMapViewport.scrollLeft = 0;
@@ -748,20 +758,59 @@
     lotsMapPanel.focus();
   }
 
-  function closeLotsMapModal() {
+  function closeLotsMapModal(restoreFocus) {
+    if (restoreFocus === undefined) restoreFocus = true;
     if (!lotsMapModal) return;
     lotsMapModal.classList.remove('is-open');
     lotsMapModal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('lots-map-modal-open');
-    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+    if (lotsMapViewport) {
+      lotsMapViewport.classList.remove('is-panning');
+    }
+    lotsMapGesture.isPanning = false;
+    lotsMapGesture.isMousePanning = false;
+    if (lotsMapTrigger) {
+      lotsMapTrigger.setAttribute('aria-expanded', 'false');
+    }
+    if (restoreFocus && lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
       lastFocusedElement.focus();
     }
   }
 
+  function syncLotsMapMode() {
+    if (!lotsMapTrigger) return;
+    var desktopMode = isLotsMapDesktopMode();
+    lotsMapTrigger.disabled = !desktopMode;
+    lotsMapTrigger.classList.toggle('is-inline', !desktopMode);
+    lotsMapTrigger.setAttribute('aria-disabled', desktopMode ? 'false' : 'true');
+    lotsMapTrigger.tabIndex = desktopMode ? 0 : -1;
+
+    if (desktopMode) {
+      lotsMapTrigger.setAttribute('aria-haspopup', 'dialog');
+      lotsMapTrigger.setAttribute('aria-controls', 'lots-map-modal');
+      if (!lotsMapTrigger.hasAttribute('aria-expanded')) {
+        lotsMapTrigger.setAttribute('aria-expanded', 'false');
+      }
+      return;
+    }
+
+    lotsMapTrigger.removeAttribute('aria-haspopup');
+    lotsMapTrigger.removeAttribute('aria-controls');
+    lotsMapTrigger.removeAttribute('aria-expanded');
+    closeLotsMapModal(false);
+  }
+
   if (lotsMapTrigger && lotsMapModal) {
     applyLotsMapZoom(1);
+    syncLotsMapMode();
 
     lotsMapTrigger.addEventListener('click', openLotsMapModal);
+
+    if (typeof lotsMapDesktopQuery.addEventListener === 'function') {
+      lotsMapDesktopQuery.addEventListener('change', syncLotsMapMode);
+    }
+
+    window.addEventListener('resize', syncLotsMapMode);
 
     lotsMapCloseButtons.forEach(function(button) {
       button.addEventListener('click', closeLotsMapModal);
@@ -791,11 +840,32 @@
 
     if (lotsMapViewport && lotsMapImage) {
       lotsMapViewport.addEventListener('wheel', function(event) {
-        if (!event.ctrlKey) return;
+        if (!lotsMapModal.classList.contains('is-open')) return;
         event.preventDefault();
-        var direction = event.deltaY < 0 ? 0.18 : -0.18;
+        var direction = event.deltaY < 0 ? 0.22 : -0.22;
         zoomLotsMapAtPoint(lotsMapZoom + direction, event.clientX, event.clientY);
       }, { passive: false });
+
+      lotsMapViewport.addEventListener('dblclick', function(event) {
+        if (!lotsMapModal.classList.contains('is-open')) return;
+        event.preventDefault();
+        if (lotsMapZoom > 1.45) {
+          zoomLotsMapAtPoint(1, event.clientX, event.clientY);
+        } else {
+          zoomLotsMapAtPoint(2.2, event.clientX, event.clientY);
+        }
+      });
+
+      lotsMapViewport.addEventListener('mousedown', function(event) {
+        if (!lotsMapModal.classList.contains('is-open') || lotsMapZoom <= 1.01 || event.button !== 0) return;
+        event.preventDefault();
+        lotsMapGesture.isMousePanning = true;
+        lotsMapGesture.startX = event.clientX;
+        lotsMapGesture.startY = event.clientY;
+        lotsMapGesture.startScrollLeft = lotsMapViewport.scrollLeft;
+        lotsMapGesture.startScrollTop = lotsMapViewport.scrollTop;
+        lotsMapViewport.classList.add('is-panning');
+      });
 
       lotsMapViewport.addEventListener('touchstart', function(event) {
         if (event.touches.length === 2) {
@@ -862,11 +932,54 @@
           lotsMapGesture.lastTapAt = now;
         }
       });
+
+      document.addEventListener('mousemove', function(event) {
+        if (!lotsMapGesture.isMousePanning || !lotsMapViewport) return;
+        event.preventDefault();
+        lotsMapViewport.scrollLeft = lotsMapGesture.startScrollLeft - (event.clientX - lotsMapGesture.startX);
+        lotsMapViewport.scrollTop = lotsMapGesture.startScrollTop - (event.clientY - lotsMapGesture.startY);
+      });
+
+      document.addEventListener('mouseup', function() {
+        if (!lotsMapGesture.isMousePanning || !lotsMapViewport) return;
+        lotsMapGesture.isMousePanning = false;
+        lotsMapViewport.classList.remove('is-panning');
+      });
+
+      window.addEventListener('blur', function() {
+        if (!lotsMapViewport) return;
+        lotsMapGesture.isMousePanning = false;
+        lotsMapViewport.classList.remove('is-panning');
+      });
     }
 
     document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape' && lotsMapModal.classList.contains('is-open')) {
+      if (!lotsMapModal.classList.contains('is-open')) return;
+
+      if (event.key === 'Escape') {
         closeLotsMapModal();
+        return;
+      }
+
+      if (event.key === '+' || event.key === '=') {
+        event.preventDefault();
+        zoomLotsMapAtPoint(lotsMapZoom + 0.22);
+        return;
+      }
+
+      if (event.key === '-') {
+        event.preventDefault();
+        zoomLotsMapAtPoint(lotsMapZoom - 0.22);
+        return;
+      }
+
+      if (event.key === '0') {
+        event.preventDefault();
+        applyLotsMapZoom(1);
+        if (lotsMapViewport) {
+          lotsMapViewport.scrollTop = 0;
+          lotsMapViewport.scrollLeft = 0;
+        }
       }
     });
   }
