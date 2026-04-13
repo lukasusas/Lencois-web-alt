@@ -2,3 +2,8 @@
 __pycache__/
 .claude/
 .vercel
+node_modules
+.next
+dist
+*.log
+*.tsbuildinfo

@@ -1,0 +1,95 @@
+.page {
+  padding: calc(var(--header-offset) + var(--space-3xl)) var(--page-padding) var(--space-5xl);
+}
+
+.inner {
+  width: min(100%, var(--page-max));
+  margin: 0 auto;
+  display: grid;
+  gap: var(--space-3xl);
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.hero {
+  display: grid;
+  gap: var(--space-lg);
+  padding-top: var(--space-lg);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 2.25rem;
+  height: 1px;
+  background: color-mix(in oklch, var(--color-accent) 34%, var(--color-line));
+}
+
+.title {
+  max-width: 11ch;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.intro {
+  max-width: 50ch;
+  color: var(--color-ink-soft);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.viewer {
+  align-self: center;
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.note {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+}
+
+.noteTitle {
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.noteBody {
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 920px) {
+  .heroGrid,
+  .notes {
+    grid-template-columns: 1fr;
+  }
+}

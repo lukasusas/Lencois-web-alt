@@ -1,0 +1,224 @@
+.page {
+  padding: calc(var(--header-offset) + var(--space-3xl)) var(--page-padding) var(--space-5xl);
+}
+
+.pageInner {
+  width: min(100%, var(--page-max));
+  margin: 0 auto;
+  display: grid;
+  gap: var(--space-4xl);
+}
+
+.hero {
+  display: grid;
+  gap: var(--space-2xl);
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: var(--space-2xl);
+  align-items: end;
+}
+
+.heroCopy {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.heroTitle {
+  max-width: 11ch;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 6rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.heroIntro {
+  max-width: 44ch;
+  color: var(--color-ink-soft);
+}
+
+.heroMedia {
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 9rem var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.heroMedia :global(img) {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+  padding-top: var(--space-md);
+}
+
+.highlight {
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+}
+
+.highlightLabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.highlightValue {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
+.sections {
+  display: grid;
+  gap: var(--space-4xl);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.sectionEssay,
+.sectionFacts {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.sectionEssay[data-media-position="start"] .sectionText {
+  order: 2;
+}
+
+.sectionEssay[data-media-position="start"] .sectionMediaWrap {
+  order: 1;
+}
+
+.sectionText {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.sectionTitle {
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.sectionIntro,
+.paragraphs {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.paragraphs p,
+.sectionIntro {
+  max-width: 56ch;
+  color: var(--color-ink-soft);
+}
+
+.quote {
+  max-width: 24ch;
+  padding-top: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  line-height: 1.12;
+}
+
+.sectionMediaWrap {
+  overflow: hidden;
+  border-radius: var(--radius-md) var(--radius-md) 7rem var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.sectionMediaWrap :global(img) {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.factsGrid {
+  display: grid;
+  gap: var(--space-md);
+  padding-top: var(--space-sm);
+}
+
+.factRow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: var(--space-lg);
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid color-mix(in oklch, var(--color-line) 78%, transparent);
+}
+
+.factLabel {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.featureList {
+  display: grid;
+  gap: 0.9rem;
+  padding-top: var(--space-sm);
+}
+
+.featureItem {
+  display: grid;
+  gap: 0.3rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid color-mix(in oklch, var(--color-line) 78%, transparent);
+}
+
+.featureTitle {
+  font-size: 1.15rem;
+}
+
+.featureBody,
+.featureMeta {
+  color: var(--color-ink-soft);
+}
+
+.pageEnd {
+  display: grid;
+  gap: var(--space-lg);
+  padding-top: var(--space-xl);
+  border-top: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+}
+
+.pageEnd p {
+  max-width: 48ch;
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 980px) {
+  .heroGrid,
+  .sectionEssay,
+  .sectionFacts {
+    grid-template-columns: 1fr;
+  }
+
+  .heroMedia {
+    order: -1;
+  }
+
+  .sectionEssay[data-media-position="start"] .sectionText,
+  .sectionEssay[data-media-position="start"] .sectionMediaWrap {
+    order: initial;
+  }
+
+  .highlights {
+    grid-template-columns: 1fr;
+  }
+}

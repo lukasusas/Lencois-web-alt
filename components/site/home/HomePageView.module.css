@@ -1,0 +1,362 @@
+.page {
+  display: grid;
+  width: 100%;
+}
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: end;
+  overflow: clip;
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+.heroShade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, oklch(0.28 0.02 228 / 0.16), transparent 22%),
+    linear-gradient(180deg, transparent 46%, oklch(0.14 0.02 226 / 0.7) 100%);
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  width: min(100%, var(--page-max));
+  margin: 0 auto;
+  padding: calc(var(--header-offset) + var(--space-2xl)) var(--page-padding) var(--space-3xl);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2xl);
+  align-items: end;
+}
+
+.heroLead {
+  display: grid;
+  gap: var(--space-lg);
+  max-width: 42rem;
+  color: oklch(0.96 0.01 94);
+}
+
+.heroMark {
+  width: clamp(2.8rem, 5vw, 4.25rem);
+  height: auto;
+  opacity: 0.94;
+}
+
+.heroEyebrow {
+  color: color-mix(in oklch, white 80%, var(--color-dune) 20%);
+}
+
+.heroEyebrow::before {
+  background: color-mix(in oklch, white 40%, transparent);
+}
+
+.heroTitle {
+  max-width: 10ch;
+  font-family: var(--font-display);
+  font-size: clamp(3.7rem, 9vw, 8rem);
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+}
+
+.heroBody {
+  max-width: 38ch;
+  color: color-mix(in oklch, white 78%, var(--color-dune) 22%);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.heroMeta {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: end;
+  text-align: right;
+  color: color-mix(in oklch, white 72%, var(--color-dune) 28%);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sectionShell {
+  width: 100%;
+  padding: var(--space-5xl) var(--page-padding) 0;
+  display: grid;
+  gap: var(--space-5xl);
+}
+
+.features,
+.cta,
+.location,
+.lotPlan,
+.villas,
+.closingVisual {
+  width: min(100%, var(--page-max));
+  margin: 0 auto;
+}
+
+.sectionHeader,
+.ctaCopy,
+.locationIntro,
+.lotPlanCopy,
+.villasCopy,
+.villasBody {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.sectionHeader {
+  grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2xl);
+}
+
+.sectionHeaderCopy {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.sectionTitle {
+  max-width: 13ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.sectionIntro,
+.ctaBody,
+.locationCaption,
+.villasCaption,
+.caption,
+.paragraphStack p {
+  max-width: 56ch;
+  color: var(--color-ink-soft);
+}
+
+.sectionIntro {
+  margin-bottom: var(--space-lg);
+}
+
+.featureRows {
+  display: grid;
+  gap: var(--space-4xl);
+}
+
+.featureRow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  gap: var(--space-2xl);
+  align-items: center;
+}
+
+.featureRow[data-align="left"] .featureText {
+  order: 2;
+}
+
+.featureRow[data-align="left"] .featureMedia {
+  order: 1;
+}
+
+.featureRow[data-align="right"] .featureText {
+  order: 1;
+}
+
+.featureRow[data-align="right"] .featureMedia {
+  order: 2;
+}
+
+.featureText {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.featureText > :first-child {
+  margin-bottom: calc(var(--space-lg) * -0.5);
+}
+
+.featureTitle {
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 2.7vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.paragraphStack {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.featureMedia,
+.ctaMedia,
+.locationCard,
+.lotPlanFigure,
+.villaCard {
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  background: color-mix(in oklch, var(--color-surface) 92%, white 8%);
+}
+
+.featureMedia {
+  border-radius: 3rem 3rem 7rem 3rem;
+  min-height: 24rem;
+}
+
+.cta {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: var(--space-2xl);
+  align-items: center;
+  padding: var(--space-2xl);
+  border-radius: 3rem;
+  border: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in oklch, var(--color-surface) 92%, white 8%), color-mix(in oklch, var(--color-surface) 84%, var(--color-surface-muted) 16%));
+}
+
+.ctaMedia {
+  border-radius: 2rem 3rem 2rem 6rem;
+}
+
+.location {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.locationGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.locationCard {
+  aspect-ratio: 1.58 / 1;
+  align-self: start;
+  border-radius: 2.5rem;
+}
+
+.locationMedia {
+  height: 100%;
+}
+
+.locationLabel,
+.villaLabel,
+.lotPlanBadge {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  letter-spacing: 0.03em;
+  background: color-mix(in oklch, var(--color-surface) 86%, transparent);
+  color: var(--color-ink);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-soft);
+}
+
+.locationCaption,
+.villasCaption {
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lotPlan {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: var(--space-2xl);
+  align-items: center;
+}
+
+.lotPlanFigure {
+  border-radius: 3rem;
+  background: color-mix(in oklch, var(--color-surface) 94%, white 6%);
+  border: 1px solid color-mix(in oklch, var(--color-line) 80%, transparent);
+}
+
+.lotPlanLink {
+  position: relative;
+  display: block;
+  color: inherit;
+}
+
+.villas {
+  display: grid;
+  gap: var(--space-2xl);
+}
+
+.villasMeta {
+  display: grid;
+  grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2xl);
+}
+
+.villasGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.villaCard {
+  border-radius: 2.25rem;
+}
+
+.closingVisual {
+  overflow: hidden;
+  border-radius: 3rem;
+  box-shadow: var(--shadow-soft);
+  background: color-mix(in oklch, var(--color-surface) 92%, white 8%);
+  margin-bottom: var(--space-2xl);
+}
+
+@media (max-width: 980px) {
+  .heroInner,
+  .sectionHeader,
+  .featureRow,
+  .cta,
+  .locationGrid,
+  .lotPlan,
+  .villasMeta {
+    grid-template-columns: 1fr;
+  }
+
+  .heroMeta {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .featureRow[data-align="left"] .featureText,
+  .featureRow[data-align="left"] .featureMedia,
+  .featureRow[data-align="right"] .featureText,
+  .featureRow[data-align="right"] .featureMedia {
+    order: initial;
+  }
+
+  .villasGrid {
+    grid-template-columns: 1fr;
+  }
+}
