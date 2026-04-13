@@ -359,4 +359,8 @@
   .villasGrid {
     grid-template-columns: 1fr;
   }
+
+  .featureMedia {
+    min-height: 16rem;
+  }
 }
