@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Reveal } from "@/components/site/Reveal";
+import { mediaAssets } from "@/content/media";
 import type { LotPlanPage } from "@/content/types";
 
 import { LotPlanViewer } from "./LotPlanViewer";
@@ -30,7 +31,7 @@ export function LotPlanPageView({ page }: LotPlanPageViewProps) {
           </Reveal>
 
           <Reveal className={styles.viewer} delay={0.08}>
-            <LotPlanViewer asset={page.hero.media} title={page.hero.title} />
+            <LotPlanViewer asset={page.hero.media} fullAsset={mediaAssets.lotsPlanSvg} title={page.hero.title} />
           </Reveal>
         </section>
 

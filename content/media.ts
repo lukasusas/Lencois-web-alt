@@ -56,6 +56,12 @@ export const mediaAssets = {
     width: 8845,
     height: 2912
   } satisfies MediaAsset,
+  lotsPlanSvg: {
+    src: "/media/lots-plan.svg",
+    alt: "Mapa técnico do desenho dos lotes do Lençóis.",
+    width: 4207,
+    height: 1349
+  } satisfies MediaAsset,
   logoWordmarkDark: {
     src: "/media/logo-wordmark-dark.png",
     alt: "Logotipo do Lençóis Condomínio de Lotes.",

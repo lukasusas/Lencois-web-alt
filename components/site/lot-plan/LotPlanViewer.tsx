@@ -11,6 +11,7 @@ import styles from "./LotPlanViewer.module.css";
 
 type LotPlanViewerProps = {
   asset: MediaAsset;
+  fullAsset?: MediaAsset;
   title: string;
 };
 
@@ -22,7 +23,9 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-export function LotPlanViewer({ asset, title }: LotPlanViewerProps) {
+export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
+  const viewerAsset = fullAsset ?? asset;
+  const isSvg = viewerAsset.src.endsWith(".svg");
   const reduceMotion = useReducedMotion();
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
@@ -278,8 +281,13 @@ export function LotPlanViewer({ asset, title }: LotPlanViewerProps) {
                   onPointerCancel={endPan}
                   onWheel={handleWheel}
                 >
-                  <div className={styles.canvas} style={{ width: `${zoom * 100}%`, aspectRatio: `${asset.width} / ${asset.height}` }}>
-                    <Image src={asset.src} alt={asset.alt} fill sizes="(min-width: 1px) 200vw" priority className={styles.image} style={{ objectFit: "cover" }} />
+                  <div className={styles.canvas} style={{ width: `${zoom * 100}%`, aspectRatio: `${viewerAsset.width} / ${viewerAsset.height}` }}>
+                    {isSvg ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={viewerAsset.src} alt={viewerAsset.alt} className={styles.imageSvg} draggable={false} />
+                    ) : (
+                      <Image src={viewerAsset.src} alt={viewerAsset.alt} fill sizes="(min-width: 1px) 200vw" priority className={styles.image} style={{ objectFit: "cover" }} />
+                    )}
                   </div>
                 </div>
               )}
@@ -295,19 +303,16 @@ export function LotPlanViewer({ asset, title }: LotPlanViewerProps) {
                   <div
                     className={styles.canvasTouch}
                     style={{
-                      aspectRatio: `${asset.width} / ${asset.height}`,
+                      aspectRatio: `${viewerAsset.width} / ${viewerAsset.height}`,
                       transform: `translate(${canvasTransform.x}px, ${canvasTransform.y}px) scale(${canvasTransform.scale})`,
                     }}
                   >
-                    <Image
-                      src={asset.src}
-                      alt={asset.alt}
-                      fill
-                      sizes="300vw"
-                      priority
-                      className={styles.image}
-                      style={{ objectFit: "cover" }}
-                    />
+                    {isSvg ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={viewerAsset.src} alt={viewerAsset.alt} className={styles.imageSvg} draggable={false} />
+                    ) : (
+                      <Image src={viewerAsset.src} alt={viewerAsset.alt} fill sizes="300vw" priority className={styles.image} style={{ objectFit: "cover" }} />
+                    )}
                   </div>
                 </div>
               )}

@@ -243,6 +243,14 @@
   -webkit-user-drag: none;
 }
 
+.imageSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 @media (max-width: 720px) {
   .panel {
     height: min(100%, 88svh);
