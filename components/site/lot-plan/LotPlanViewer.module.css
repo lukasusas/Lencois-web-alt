@@ -148,6 +148,70 @@
   -webkit-user-drag: none;
 }
 
+/* Touch device styles */
+.panelTouch {
+  width: 100%;
+  height: 100%;
+  gap: 0;
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background: var(--color-surface);
+}
+
+.toolbarTouch {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.closeTouch {
+  min-height: 2.8rem;
+  min-width: 2.8rem;
+  padding: 0.7rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+  background: color-mix(in oklch, white 56%, var(--color-surface) 44%);
+  color: var(--color-ink);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background-color 150ms ease;
+}
+
+.closeTouch:hover {
+  background: color-mix(in oklch, white 72%, var(--color-surface) 28%);
+}
+
+.hint {
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--color-ink) 90%, transparent);
+  color: var(--color-surface);
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.viewportTouch {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--color-surface);
+  cursor: grab;
+}
+
+.viewportTouch:active {
+  cursor: grabbing;
+}
+
 @media (max-width: 720px) {
   .panel {
     height: min(100%, 88svh);
