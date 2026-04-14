@@ -33,27 +33,27 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
   // Desktop pan state
   const panState = useRef({ active: false, startX: 0, startY: 0, startScrollLeft: 0, startScrollTop: 0 });
 
-  // Touch gesture state — all in refs to avoid stale closures during rapid events
-  const touchGesture = useRef({
-    // Pan
-    panX: 0,           // committed accumulated pan
+  // Touch state — all refs to avoid stale closures in rapid gesture events
+  const touch = useRef({
+    // committed state (persists between gestures)
+    panX: 0,
     panY: 0,
-    startTouchX: 0,    // touch start position for current gesture
-    startTouchY: 0,
-    activeDeltaX: 0,   // live delta during current gesture
-    activeDeltaY: 0,
-    // Pinch
-    initialPinchDist: 0,
-    initialZoom: 1,
+    scale: 1,
+    // per-gesture scratch
+    startX: 0,
+    startY: 0,
+    pinchDist0: 0,
+    pinchScale0: 1,
   });
 
   const [isOpen, setIsOpen] = useState(false);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(1);               // desktop zoom
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
-  // Displayed transform values — kept in state so canvas re-renders
-  const [canvasTransform, setCanvasTransform] = useState({ x: 0, y: 0, scale: 1 });
+  // Touch display state — drives CSS
+  const [touchScale, setTouchScale] = useState(1);   // multiplies canvas width
+  const [touchPan, setTouchPan] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
@@ -62,8 +62,9 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
   function openViewer() {
     lastFocusedRef.current = document.activeElement as HTMLElement | null;
     setZoom(1);
-    setCanvasTransform({ x: 0, y: 0, scale: 1 });
-    touchGesture.current = { panX: 0, panY: 0, startTouchX: 0, startTouchY: 0, activeDeltaX: 0, activeDeltaY: 0, initialPinchDist: 0, initialZoom: 1 };
+    setTouchScale(1);
+    setTouchPan({ x: 0, y: 0 });
+    touch.current = { panX: 0, panY: 0, scale: 1, startX: 0, startY: 0, pinchDist0: 0, pinchScale0: 1 };
     setIsOpen(true);
     if (isTouchDevice) {
       setShowHint(true);
@@ -81,67 +82,69 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
 
   // ── Touch gestures ────────────────────────────────────────────────
 
-  function pinchDistance(touches: React.TouchList): number {
-    if (touches.length < 2) return 0;
+  function getPinchDist(touches: React.TouchList): number {
     const dx = touches[0]!.clientX - touches[1]!.clientX;
     const dy = touches[0]!.clientY - touches[1]!.clientY;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  function handleTouchStart(event: ReactTouchEvent<HTMLDivElement>) {
-    const g = touchGesture.current;
+  // Clamp pan so the canvas edge can't go past the viewport centre
+  function clampPan(panX: number, panY: number, scale: number) {
+    const vw = viewportRef.current?.clientWidth ?? window.innerWidth;
+    const vh = viewportRef.current?.clientHeight ?? window.innerHeight;
+    // canvas is scale * vw wide, centred initially
+    const maxX = ((scale - 1) * vw) / 2;
+    // aspect ratio of the svg map
+    const ar = viewerAsset.width / viewerAsset.height;
+    const canvasH = (scale * vw) / ar;
+    const maxY = Math.max(0, (canvasH - vh) / 2);
+    return {
+      x: clamp(panX, -maxX, maxX),
+      y: clamp(panY, -maxY, maxY),
+    };
+  }
 
-    if (event.touches.length === 1) {
-      const t = event.touches[0]!;
-      g.startTouchX = t.clientX;
-      g.startTouchY = t.clientY;
-      g.activeDeltaX = 0;
-      g.activeDeltaY = 0;
-    } else if (event.touches.length === 2) {
-      g.initialPinchDist = pinchDistance(event.touches);
-      g.initialZoom = canvasTransform.scale;
+  function handleTouchStart(e: ReactTouchEvent<HTMLDivElement>) {
+    const t = touch.current;
+    if (e.touches.length === 1) {
+      t.startX = e.touches[0]!.clientX;
+      t.startY = e.touches[0]!.clientY;
+    } else if (e.touches.length === 2) {
+      t.pinchDist0 = getPinchDist(e.touches);
+      t.pinchScale0 = t.scale;
     }
   }
 
-  function handleTouchMove(event: ReactTouchEvent<HTMLDivElement>) {
-    const g = touchGesture.current;
+  function handleTouchMove(e: ReactTouchEvent<HTMLDivElement>) {
+    const t = touch.current;
 
-    if (event.touches.length === 1) {
-      const t = event.touches[0]!;
-      const currentScale = canvasTransform.scale;
-      if (currentScale > 1.02) {
-        g.activeDeltaX = t.clientX - g.startTouchX;
-        g.activeDeltaY = t.clientY - g.startTouchY;
-        setCanvasTransform(prev => ({
-          ...prev,
-          x: g.panX + g.activeDeltaX,
-          y: g.panY + g.activeDeltaY,
-        }));
-      }
-    } else if (event.touches.length === 2 && g.initialPinchDist > 0) {
-      const dist = pinchDistance(event.touches);
-      const rawScale = g.initialZoom * (dist / g.initialPinchDist);
-      const newScale = clamp(rawScale, MIN_ZOOM, MAX_ZOOM_TOUCH);
-      setCanvasTransform(prev => ({ ...prev, scale: newScale }));
+    if (e.touches.length === 1) {
+      if (t.scale <= 1.02) return;
+      const dx = e.touches[0]!.clientX - t.startX;
+      const dy = e.touches[0]!.clientY - t.startY;
+      const clamped = clampPan(t.panX + dx, t.panY + dy, t.scale);
+      setTouchPan(clamped);
+    } else if (e.touches.length === 2 && t.pinchDist0 > 0) {
+      const dist = getPinchDist(e.touches);
+      const newScale = clamp(t.pinchScale0 * (dist / t.pinchDist0), MIN_ZOOM, MAX_ZOOM_TOUCH);
+      t.scale = newScale;
+      setTouchScale(newScale);
+      // Re-clamp pan for new scale
+      const clamped = clampPan(t.panX, t.panY, newScale);
+      t.panX = clamped.x;
+      t.panY = clamped.y;
+      setTouchPan(clamped);
     }
   }
 
-  function handleTouchEnd(event: ReactTouchEvent<HTMLDivElement>) {
-    const g = touchGesture.current;
-
-    if (event.touches.length === 0) {
-      // Commit the active delta into the persistent pan
-      g.panX += g.activeDeltaX;
-      g.panY += g.activeDeltaY;
-      g.activeDeltaX = 0;
-      g.activeDeltaY = 0;
-
-      // Clamp pan so the map doesn't fly off screen
-      const scale = canvasTransform.scale;
-      const maxPan = 200 * (scale - 1);
-      g.panX = clamp(g.panX, -maxPan, maxPan);
-      g.panY = clamp(g.panY, -maxPan, maxPan);
-      setCanvasTransform(prev => ({ ...prev, x: g.panX, y: g.panY }));
+  function handleTouchEnd(e: ReactTouchEvent<HTMLDivElement>) {
+    if (e.touches.length === 0) {
+      // Commit live pan delta into persistent pan
+      const t = touch.current;
+      const clamped = clampPan(touchPan.x, touchPan.y, t.scale);
+      t.panX = clamped.x;
+      t.panY = clamped.y;
+      setTouchPan(clamped);
     }
   }
 
@@ -149,20 +152,18 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
 
   useEffect(() => {
     if (!isOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { event.preventDefault(); closeViewer(); }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { e.preventDefault(); closeViewer(); }
       if (!isTouchDevice) {
-        if (event.key === "+" || event.key === "=") { event.preventDefault(); setZoom(z => clamp(z + 0.25, MIN_ZOOM, MAX_ZOOM)); }
-        if (event.key === "-") { event.preventDefault(); setZoom(z => clamp(z - 0.25, MIN_ZOOM, MAX_ZOOM)); }
-        if (event.key === "0") {
-          event.preventDefault();
+        if (e.key === "+" || e.key === "=") { e.preventDefault(); setZoom(z => clamp(z + 0.25, MIN_ZOOM, MAX_ZOOM)); }
+        if (e.key === "-") { e.preventDefault(); setZoom(z => clamp(z - 0.25, MIN_ZOOM, MAX_ZOOM)); }
+        if (e.key === "0") {
+          e.preventDefault();
           setZoom(1);
           if (viewportRef.current) { viewportRef.current.scrollTop = 0; viewportRef.current.scrollLeft = 0; }
         }
       }
     };
-
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", onKeyDown);
@@ -175,40 +176,51 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
     viewportRef.current.scrollLeft = 0;
   }, [isOpen]);
 
-  function startPan(event: ReactPointerEvent<HTMLDivElement>) {
-    if (zoom <= 1.01 || event.button !== 0 || !viewportRef.current) return;
-    event.preventDefault();
+  function startPan(e: ReactPointerEvent<HTMLDivElement>) {
+    if (zoom <= 1.01 || e.button !== 0 || !viewportRef.current) return;
+    e.preventDefault();
     const vp = viewportRef.current;
-    panState.current = { active: true, startX: event.clientX, startY: event.clientY, startScrollLeft: vp.scrollLeft, startScrollTop: vp.scrollTop };
+    panState.current = { active: true, startX: e.clientX, startY: e.clientY, startScrollLeft: vp.scrollLeft, startScrollTop: vp.scrollTop };
     vp.classList.add(styles.isPanning);
-    vp.setPointerCapture(event.pointerId);
+    vp.setPointerCapture(e.pointerId);
   }
 
-  function movePan(event: ReactPointerEvent<HTMLDivElement>) {
+  function movePan(e: ReactPointerEvent<HTMLDivElement>) {
     if (!panState.current.active || !viewportRef.current) return;
     const vp = viewportRef.current;
-    vp.scrollLeft = panState.current.startScrollLeft - (event.clientX - panState.current.startX);
-    vp.scrollTop = panState.current.startScrollTop - (event.clientY - panState.current.startY);
+    vp.scrollLeft = panState.current.startScrollLeft - (e.clientX - panState.current.startX);
+    vp.scrollTop = panState.current.startScrollTop - (e.clientY - panState.current.startY);
   }
 
-  function endPan(event: ReactPointerEvent<HTMLDivElement>) {
+  function endPan(e: ReactPointerEvent<HTMLDivElement>) {
     if (!viewportRef.current) return;
     panState.current.active = false;
     viewportRef.current.classList.remove(styles.isPanning);
-    if (viewportRef.current.hasPointerCapture(event.pointerId)) {
-      viewportRef.current.releasePointerCapture(event.pointerId);
-    }
+    if (viewportRef.current.hasPointerCapture(e.pointerId)) viewportRef.current.releasePointerCapture(e.pointerId);
   }
 
-  function handleWheel(event: ReactWheelEvent<HTMLDivElement>) {
-    event.preventDefault();
-    const delta = event.deltaY < 0 ? 0.18 : -0.18;
-    setZoom(z => clamp(z + delta, MIN_ZOOM, MAX_ZOOM));
+  function handleWheel(e: ReactWheelEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setZoom(z => clamp(z + (e.deltaY < 0 ? 0.18 : -0.18), MIN_ZOOM, MAX_ZOOM));
   }
 
   function resetZoom() {
     setZoom(1);
     if (viewportRef.current) { viewportRef.current.scrollTop = 0; viewportRef.current.scrollLeft = 0; }
+  }
+
+  // ── Render helpers ────────────────────────────────────────────────
+
+  function renderImage(extraClass?: string) {
+    if (isSvg) {
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={viewerAsset.src} alt={viewerAsset.alt} className={`${styles.imageSvg} ${extraClass ?? ""}`.trim()} draggable={false} />
+      );
+    }
+    return (
+      <Image src={viewerAsset.src} alt={viewerAsset.alt} fill sizes="(min-width: 1px) 300vw" priority className={`${styles.image} ${extraClass ?? ""}`.trim()} style={{ objectFit: "cover" }} />
+    );
   }
 
   return (
@@ -241,7 +253,7 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
               exit={reduceMotion ? {} : { y: 12, opacity: 0, scale: 0.985 }}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             >
-              {/* Desktop toolbar */}
+              {/* ── Desktop toolbar ── */}
               {!isTouchDevice && (
                 <div className={styles.toolbar}>
                   <div className={styles.meta}>
@@ -258,7 +270,7 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
                 </div>
               )}
 
-              {/* Touch toolbar */}
+              {/* ── Touch toolbar ── */}
               {isTouchDevice && (
                 <div className={styles.toolbarTouch}>
                   {showHint && (
@@ -270,7 +282,7 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
                 </div>
               )}
 
-              {/* Desktop viewport — scroll-based pan */}
+              {/* ── Desktop viewport — scroll-based pan ── */}
               {!isTouchDevice && (
                 <div
                   ref={viewportRef}
@@ -282,17 +294,12 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
                   onWheel={handleWheel}
                 >
                   <div className={styles.canvas} style={{ width: `${zoom * 100}%`, aspectRatio: `${viewerAsset.width} / ${viewerAsset.height}` }}>
-                    {isSvg ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={viewerAsset.src} alt={viewerAsset.alt} className={styles.imageSvg} draggable={false} />
-                    ) : (
-                      <Image src={viewerAsset.src} alt={viewerAsset.alt} fill sizes="(min-width: 1px) 200vw" priority className={styles.image} style={{ objectFit: "cover" }} />
-                    )}
+                    {renderImage()}
                   </div>
                 </div>
               )}
 
-              {/* Touch viewport — transform-based pan + pinch zoom */}
+              {/* ── Touch viewport — width-based zoom (forces SVG re-render = crisp) + translate pan ── */}
               {isTouchDevice && (
                 <div
                   className={styles.viewportTouch}
@@ -303,16 +310,14 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
                   <div
                     className={styles.canvasTouch}
                     style={{
+                      // Width drives actual SVG render resolution — crisp at any zoom
+                      width: `${touchScale * 100}%`,
                       aspectRatio: `${viewerAsset.width} / ${viewerAsset.height}`,
-                      transform: `translate(${canvasTransform.x}px, ${canvasTransform.y}px) scale(${canvasTransform.scale})`,
+                      // Pan with translate only — no scaling of rasterised bitmap
+                      transform: `translate(${touchPan.x}px, ${touchPan.y}px)`,
                     }}
                   >
-                    {isSvg ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={viewerAsset.src} alt={viewerAsset.alt} className={styles.imageSvg} draggable={false} />
-                    ) : (
-                      <Image src={viewerAsset.src} alt={viewerAsset.alt} fill sizes="300vw" priority className={styles.image} style={{ objectFit: "cover" }} />
-                    )}
+                    {renderImage()}
                   </div>
                 </div>
               )}
