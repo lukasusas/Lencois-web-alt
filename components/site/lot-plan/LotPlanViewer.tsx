@@ -16,7 +16,7 @@ type LotPlanViewerProps = {
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 3.2;
-const MAX_ZOOM_TOUCH = 5;
+const MAX_ZOOM_TOUCH = 20;
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
