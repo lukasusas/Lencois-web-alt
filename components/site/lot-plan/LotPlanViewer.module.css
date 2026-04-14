@@ -188,19 +188,18 @@
   min-width: 2.8rem;
   padding: 0;
   border-radius: 999px;
-  border: 1px solid oklch(1 0 0 / 0.2);
-  background: oklch(1 0 0 / 0.12);
-  color: oklch(1 0 0 / 0.9);
+  border: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+  background: var(--color-ink);
+  color: var(--color-surface);
   font-size: 1.1rem;
   cursor: pointer;
   display: grid;
   place-items: center;
-  backdrop-filter: blur(12px);
-  transition: background-color 150ms ease;
+  transition: opacity 150ms ease;
 }
 
 .closeTouch:hover {
-  background: oklch(1 0 0 / 0.2);
+  opacity: 0.85;
 }
 
 .hint {
