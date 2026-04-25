@@ -259,7 +259,7 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
                   <div className={styles.meta}>
                     <p className={styles.eyebrow}>Planta dos lotes</p>
                     <h2 className={styles.title}>{title}</h2>
-                    <p className={styles.helper}>Use `+`, `-` ou a roda do mouse para ampliar. Arraste para mover.</p>
+                    <p className={styles.helper}>Use +, - ou a roda do mouse para ampliar. Arraste para mover.</p>
                   </div>
                   <div className={styles.controls}>
                     <button type="button" className={styles.control} onClick={() => setZoom(z => clamp(z - 0.3, MIN_ZOOM, MAX_ZOOM))} aria-label="Diminuir zoom">-</button>
@@ -275,7 +275,7 @@ export function LotPlanViewer({ asset, fullAsset, title }: LotPlanViewerProps) {
                 <div className={styles.toolbarTouch}>
                   {showHint && (
                     <motion.div className={styles.hint} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      Beliscá para ampliar · Arraste para navegar
+                      Belisque para ampliar · Arraste para navegar
                     </motion.div>
                   )}
                   <button type="button" className={styles.closeTouch} onClick={closeViewer} aria-label="Fechar">✕</button>

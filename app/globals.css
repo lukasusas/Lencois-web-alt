@@ -216,3 +216,9 @@ strong {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (max-width: 960px) {
+  main {
+    padding-bottom: 4.75rem;
+  }
+}

@@ -37,13 +37,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.95rem;
+  gap: clamp(0.55rem, 0.9vw, 0.95rem);
 }
 
 .navLink {
   position: relative;
   padding: 0.35rem 0;
-  font-size: 0.95rem;
+  font-size: clamp(0.86rem, 0.86vw, 0.95rem);
   color: var(--color-ink-soft);
   transition: color 180ms ease;
 }
@@ -76,7 +76,11 @@
 }
 
 .desktopCta {
-  min-width: 8.5rem;
+  min-width: 6rem;
+}
+
+.whatsappCta {
+  min-width: 7rem;
 }
 
 .toggle {
@@ -142,6 +146,10 @@
   margin-top: 0.4rem;
 }
 
+.stickyWhatsApp {
+  display: none;
+}
+
 @media (max-width: 960px) {
   .bar {
     grid-template-columns: auto auto;
@@ -149,12 +157,30 @@
   }
 
   .desktopNav,
-  .desktopCta {
+  .desktopCta,
+  .whatsappCta {
     display: none;
   }
 
   .toggle,
   .mobilePanel {
     display: grid;
+  }
+
+  .stickyWhatsApp {
+    pointer-events: auto;
+    position: fixed;
+    left: var(--page-padding);
+    right: var(--page-padding);
+    bottom: max(0.85rem, env(safe-area-inset-bottom));
+    z-index: 55;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.2rem;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-surface);
+    box-shadow: 0 18px 48px oklch(0.24 0.028 232 / 0.24);
   }
 }

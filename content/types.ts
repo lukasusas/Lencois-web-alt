@@ -11,6 +11,28 @@ export type MediaAsset = {
 export type CTA = {
   label: string;
   href: string;
+  external?: boolean;
+};
+
+export type FactItem = {
+  label: string;
+  value: string;
+};
+
+export type StepItem = {
+  title: string;
+  body: string;
+};
+
+export type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+export type ActionCard = {
+  title: string;
+  body: string;
+  cta: CTA;
 };
 
 export type NavItem = {
@@ -127,6 +149,8 @@ export type HomePage = {
     headline: string;
     subheadline: string;
     location: string;
+    facts: FactItem[];
+    trustCue: string;
     primaryCta: CTA;
     secondaryCta: CTA;
     media: MediaAsset;
@@ -160,12 +184,51 @@ export type HomePage = {
     caption: string;
     primaryCta: CTA;
   };
+  reserveFlow: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    steps: StepItem[];
+    cta: CTA;
+  };
   villas: {
     eyebrow: string;
     title: string;
     body: string[];
     images: HomeGalleryItem[];
     caption: string;
+    flow: StepItem[];
+  };
+  commercial: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    actions: ActionCard[];
+  };
+  trust: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    items: FactItem[];
+  };
+  faq: {
+    eyebrow: string;
+    title: string;
+    items: FaqItem[];
+  };
+  broker: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    facts: FactItem[];
+    cta: CTA;
+  };
+  international: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    items: FactItem[];
+    cta: CTA;
   };
   closingVisual: {
     media: MediaAsset;
@@ -183,6 +246,19 @@ export type LotPlanPage = {
   body: string[];
   note: string;
   cta: CTA;
+  guidance: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+    items: FactItem[];
+  };
+  conversion: {
+    title: string;
+    body: string;
+    cta: CTA;
+    secondaryCta: CTA;
+  };
+  brokerActions: ActionCard[];
 };
 
 export type EditorialPage = {

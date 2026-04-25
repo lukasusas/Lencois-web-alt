@@ -18,15 +18,14 @@ export function SiteFooter({ site }: SiteFooterProps) {
           <div className={styles.lead}>
             <span className="sectionEyebrow">Contato</span>
             <h2 className={styles.title}>
-              Alguns lugares tocam a gente de um jeito difícil de explicar.
+              Consulte disponibilidade, valores e próximos passos.
             </h2>
             <p className={styles.copy}>
-              Se o Lençóis faz sentido para o seu momento, a equipe pode apresentar o
-              projeto, o contexto do lugar e os próximos passos com clareza.
+              Conte seu orçamento, preferência de vista e intenção de construção. A equipe pode indicar os lotes mais adequados, explicar condições e orientar a reserva antes do lançamento oficial.
             </p>
             <div className={styles.actions}>
               <Link href={site.contact.whatsappHref} className="buttonPrimary" target="_blank" rel="noreferrer">
-                WhatsApp
+                Falar pelo WhatsApp
               </Link>
               <Link href={site.contact.phoneHref} className="buttonSecondary">
                 Ligar

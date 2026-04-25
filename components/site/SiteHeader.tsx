@@ -13,9 +13,10 @@ import styles from "./SiteHeader.module.css";
 type SiteHeaderProps = {
   nav: NavItem[];
   lotPlanHref: string;
+  whatsappHref: string;
 };
 
-export function SiteHeader({ nav, lotPlanHref }: SiteHeaderProps) {
+export function SiteHeader({ nav, lotPlanHref, whatsappHref }: SiteHeaderProps) {
   const reduceMotion = useReducedMotion();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -52,8 +53,16 @@ export function SiteHeader({ nav, lotPlanHref }: SiteHeaderProps) {
         </nav>
 
         <div className={styles.actions}>
+          <Link
+            href={whatsappHref}
+            className={`buttonPrimary ${styles.whatsappCta}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            WhatsApp
+          </Link>
           <Link href={lotPlanHref} className={`buttonSecondary ${styles.desktopCta}`}>
-            Planta dos lotes
+            Planta
           </Link>
           <button
             type="button"
@@ -93,14 +102,26 @@ export function SiteHeader({ nav, lotPlanHref }: SiteHeaderProps) {
             ))}
             <Link
               href={lotPlanHref}
-              className={`buttonPrimary ${styles.mobileCta}`}
+              className={`buttonSecondary ${styles.mobileCta}`}
               onClick={() => setIsOpen(false)}
             >
               Planta dos lotes
             </Link>
+            <Link
+              href={whatsappHref}
+              className={`buttonPrimary ${styles.mobileCta}`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setIsOpen(false)}
+            >
+              Consultar valores
+            </Link>
           </motion.nav>
         ) : null}
       </AnimatePresence>
+      <Link href={whatsappHref} className={styles.stickyWhatsApp} target="_blank" rel="noreferrer">
+        Consultar valores
+      </Link>
     </header>
   );
 }

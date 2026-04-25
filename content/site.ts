@@ -1,6 +1,11 @@
 import type { SiteMeta } from "@/content/types";
 
 export const DEFAULT_LOCALE = "pt-BR" as const;
+export const WHATSAPP_BASE = "https://wa.me/5585988327777";
+
+export function whatsappLink(message: string) {
+  return `${WHATSAPP_BASE}?text=${encodeURIComponent(message)}`;
+}
 
 export const siteMeta: SiteMeta = {
   name: "Lençóis Condomínio de Lotes",
@@ -20,14 +25,24 @@ export const siteMeta: SiteMeta = {
       description: "Lagoa, dunas e contexto"
     },
     {
-      label: "Lotes",
+      label: "Planta geral",
       href: "/#lotes",
       description: "Planta geral do conjunto"
+    },
+    {
+      label: "Reservar",
+      href: "/#reservar",
+      description: "Disponibilidade e condições"
     },
     {
       label: "Villas",
       href: "/#villas",
       description: "Arquitetura e construção"
+    },
+    {
+      label: "International",
+      href: "/#international",
+      description: "English buyer path"
     },
     {
       label: "Contato",
@@ -39,8 +54,7 @@ export const siteMeta: SiteMeta = {
   contact: {
     phone: "+55 (85) 98832-7777",
     phoneHref: "tel:+5585988327777",
-    whatsappHref:
-      "https://wa.me/5585988327777?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20Len%C3%A7%C3%B3is.",
+    whatsappHref: whatsappLink("Olá, gostaria de saber mais sobre o Lençóis."),
     address: "Rua José Pires, 591, Paracuru, CE, 62680-000, Brasil",
     mapsHref: "https://maps.app.goo.gl/AoYGXdLbuoaWUx9XA"
   }

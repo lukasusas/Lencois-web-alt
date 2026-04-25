@@ -4,13 +4,26 @@ import Link from "next/link";
 import { ParallaxMedia } from "@/components/site/ParallaxMedia";
 import { Reveal } from "@/components/site/Reveal";
 import { mediaAssets } from "@/content/media";
-import type { HomePage } from "@/content/types";
+import type { CTA, HomePage } from "@/content/types";
 
 import styles from "./HomePageView.module.css";
 
 type HomePageViewProps = {
   page: HomePage;
 };
+
+function CtaLink({ cta, className }: { cta: CTA; className: string }) {
+  return (
+    <Link
+      href={cta.href}
+      className={className}
+      target={cta.external ? "_blank" : undefined}
+      rel={cta.external ? "noreferrer" : undefined}
+    >
+      {cta.label}
+    </Link>
+  );
+}
 
 export function HomePageView({ page }: HomePageViewProps) {
   return (
@@ -43,13 +56,10 @@ export function HomePageView({ page }: HomePageViewProps) {
             <h1 className={styles.heroTitle}>{page.hero.headline}</h1>
             <p className={styles.heroBody}>{page.hero.subheadline}</p>
             <div className={styles.heroActions}>
-              <Link href={page.hero.primaryCta.href} className="buttonPrimary">
-                {page.hero.primaryCta.label}
-              </Link>
-              <Link href={page.hero.secondaryCta.href} className="buttonSecondary">
-                {page.hero.secondaryCta.label}
-              </Link>
+              <CtaLink cta={page.hero.primaryCta} className="buttonPrimary" />
+              <CtaLink cta={page.hero.secondaryCta} className="buttonSecondary" />
             </div>
+            <p className={styles.heroTrust}>{page.hero.trustCue}</p>
           </Reveal>
 
           <Reveal className={styles.heroMeta} delay={0.12}>
@@ -57,6 +67,14 @@ export function HomePageView({ page }: HomePageViewProps) {
             <span>Lagoa natural · dunas · lotes privativos</span>
           </Reveal>
         </div>
+        <Reveal className={styles.heroFacts} delay={0.18}>
+          {page.hero.facts.map((fact) => (
+            <span key={fact.label}>
+              <strong>{fact.value}</strong>
+              {fact.label}
+            </span>
+          ))}
+        </Reveal>
       </section>
 
       <div className={styles.sectionShell}>
@@ -100,12 +118,8 @@ export function HomePageView({ page }: HomePageViewProps) {
             <h2 className={styles.sectionTitle}>{page.cta.title}</h2>
             <p className={styles.ctaBody}>{page.cta.body}</p>
             <div className={styles.heroActions}>
-              <Link href={page.cta.primaryCta.href} className="buttonPrimary">
-                {page.cta.primaryCta.label}
-              </Link>
-              <Link href={page.cta.secondaryCta.href} className="buttonSecondary">
-                {page.cta.secondaryCta.label}
-              </Link>
+              <CtaLink cta={page.cta.primaryCta} className="buttonPrimary" />
+              <CtaLink cta={page.cta.secondaryCta} className="buttonSecondary" />
             </div>
           </Reveal>
 
@@ -176,6 +190,26 @@ export function HomePageView({ page }: HomePageViewProps) {
           </Reveal>
         </section>
 
+        <section className={styles.reserveFlow} id="reservar">
+          <Reveal className={styles.sectionHeader}>
+            <span className="sectionEyebrow">{page.reserveFlow.eyebrow}</span>
+            <div className={styles.sectionHeaderCopy}>
+              <h2 className={styles.sectionTitle}>{page.reserveFlow.title}</h2>
+              <p className={styles.sectionIntro}>{page.reserveFlow.intro}</p>
+              <CtaLink cta={page.reserveFlow.cta} className="buttonPrimary" />
+            </div>
+          </Reveal>
+          <div className={styles.stepGrid}>
+            {page.reserveFlow.steps.map((step, index) => (
+              <Reveal key={step.title} className={styles.stepCard} delay={index * 0.04}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
         <section className={styles.villas} id="villas">
           <div className={styles.villasMeta}>
             <Reveal className={styles.villasCopy}>
@@ -197,6 +231,103 @@ export function HomePageView({ page }: HomePageViewProps) {
               <Reveal key={item.label} className={styles.villaCard} delay={0.04 + index * 0.06}>
                 <ParallaxMedia asset={item.media} sizes="(max-width: 980px) 100vw, 30vw" ratio={item.ratio} />
                 <span className={styles.villaLabel}>{item.label}</span>
+              </Reveal>
+            ))}
+          </div>
+          <div className={styles.villaFlow}>
+            {page.villas.flow.map((step, index) => (
+              <Reveal key={step.title} className={styles.flowItem} delay={index * 0.04}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.commercial} id="condicoes">
+          <Reveal className={styles.sectionHeader}>
+            <span className="sectionEyebrow">{page.commercial.eyebrow}</span>
+            <div className={styles.sectionHeaderCopy}>
+              <h2 className={styles.sectionTitle}>{page.commercial.title}</h2>
+              <p className={styles.sectionIntro}>{page.commercial.intro}</p>
+            </div>
+          </Reveal>
+          <div className={styles.actionGrid}>
+            {page.commercial.actions.map((action, index) => (
+              <Reveal key={action.title} className={styles.actionCard} delay={index * 0.05}>
+                <h3>{action.title}</h3>
+                <p>{action.body}</p>
+                <CtaLink cta={action.cta} className="buttonSecondary" />
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.trust} id="seguranca">
+          <Reveal className={styles.sectionHeader}>
+            <span className="sectionEyebrow">{page.trust.eyebrow}</span>
+            <div className={styles.sectionHeaderCopy}>
+              <h2 className={styles.sectionTitle}>{page.trust.title}</h2>
+              <p className={styles.sectionIntro}>{page.trust.intro}</p>
+            </div>
+          </Reveal>
+          <div className={styles.factGrid}>
+            {page.trust.items.map((item, index) => (
+              <Reveal key={item.label} className={styles.factCard} delay={index * 0.035}>
+                <span>{item.label}</span>
+                <p>{item.value}</p>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.faq} id="faq">
+          <Reveal className={styles.sectionHeader}>
+            <span className="sectionEyebrow">{page.faq.eyebrow}</span>
+            <h2 className={styles.sectionTitle}>{page.faq.title}</h2>
+          </Reveal>
+          <div className={styles.faqList}>
+            {page.faq.items.map((item, index) => (
+              <Reveal key={item.question} className={styles.faqItem} delay={index * 0.025}>
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.broker} id="corretores">
+          <Reveal className={styles.brokerCopy}>
+            <span className="sectionEyebrow">{page.broker.eyebrow}</span>
+            <h2 className={styles.sectionTitle}>{page.broker.title}</h2>
+            <p className={styles.sectionIntro}>{page.broker.intro}</p>
+            <CtaLink cta={page.broker.cta} className="buttonPrimary" />
+          </Reveal>
+          <div className={styles.brokerFacts}>
+            {page.broker.facts.map((fact, index) => (
+              <Reveal key={fact.label} className={styles.factCard} delay={index * 0.04}>
+                <span>{fact.label}</span>
+                <p>{fact.value}</p>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.international} id="international">
+          <Reveal className={styles.brokerCopy}>
+            <span className="sectionEyebrow">{page.international.eyebrow}</span>
+            <h2 className={styles.sectionTitle}>{page.international.title}</h2>
+            <p className={styles.sectionIntro}>{page.international.intro}</p>
+            <CtaLink cta={page.international.cta} className="buttonPrimary" />
+          </Reveal>
+          <div className={styles.brokerFacts}>
+            {page.international.items.map((fact, index) => (
+              <Reveal key={fact.label} className={styles.factCard} delay={index * 0.04}>
+                <span>{fact.label}</span>
+                <p>{fact.value}</p>
               </Reveal>
             ))}
           </div>

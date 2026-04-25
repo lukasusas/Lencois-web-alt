@@ -52,6 +52,14 @@
   color: var(--color-ink-soft);
 }
 
+.sectionTitle {
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.15rem, 4vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -87,9 +95,99 @@
   color: var(--color-ink-soft);
 }
 
+.guidance,
+.conversion {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.guidance {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+}
+
+.guidanceCopy,
+.conversionCopy {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.guidanceGrid,
+.brokerActions {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.guidanceGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.guidanceItem,
+.actionCard {
+  display: grid;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+}
+
+.guidanceItem span {
+  font-size: 0.78rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+.guidanceItem p,
+.actionCard p,
+.conversionCopy p {
+  color: var(--color-ink-soft);
+}
+
+.conversion {
+  padding: var(--space-2xl);
+  border: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, color-mix(in oklch, var(--color-surface) 90%, white 10%), color-mix(in oklch, var(--color-accent-soft) 24%, var(--color-surface)));
+  box-shadow: var(--shadow-soft);
+}
+
+.brokerActions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.actionCard {
+  min-height: 15rem;
+  align-content: start;
+  padding: var(--space-lg);
+  border: 1px solid color-mix(in oklch, var(--color-line) 82%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklch, var(--color-surface) 88%, white 12%);
+}
+
+.actionCard h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+}
+
+.actionCard :global(.buttonSecondary) {
+  justify-self: start;
+  margin-top: auto;
+}
+
 @media (max-width: 920px) {
   .heroGrid,
-  .notes {
+  .notes,
+  .guidance,
+  .guidanceGrid,
+  .brokerActions {
     grid-template-columns: 1fr;
+  }
+
+  .conversion {
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
   }
 }

@@ -43,7 +43,11 @@ export default function RootLayout({
   return (
     <html lang={siteMeta.locale}>
       <body className={`${hankenGrotesk.variable} ${prata.variable}`}>
-        <SiteHeader nav={siteMeta.nav} lotPlanHref={siteMeta.lotPlanHref} />
+        <SiteHeader
+          nav={siteMeta.nav}
+          lotPlanHref={siteMeta.lotPlanHref}
+          whatsappHref={siteMeta.contact.whatsappHref}
+        />
         <main id="content">{children}</main>
         <SiteFooter site={siteMeta} />
       </body>
